@@ -5,3 +5,6 @@
 .idea/
 **/*_mock.go
 exp/
+
+# RPM build output
+/packaging/rpm/_build/

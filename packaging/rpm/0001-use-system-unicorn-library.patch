@@ -1,0 +1,28 @@
+--- a/internal/sap/unicorn/cache_runtime.go
++++ b/internal/sap/unicorn/cache_runtime.go
+@@ -12,6 +12,9 @@
+ 	"time"
+ )
+ 
++// systemRoot is where the distribution package installs the Unicorn library.
++const systemRoot = "/usr/libexec/ipadownloader/unicorn/" + unicornVersion
++
+ var artifactHTTPClient = &http.Client{Timeout: 2 * time.Minute}
+ 
+ type runtimePaths struct {
+@@ -30,6 +33,15 @@
+ 		return runtimePaths{}, err
+ 	}
+ 
++	// Prefer a distribution-provided library (verified by SHA-256) so the tool
++	// works without downloading anything.
++	if len(selected.dependencies) == 0 {
++		system := filepath.Join(systemRoot, selected.librarySHA256, selected.filename)
++		if ok, _ := fileMatchesSHA256(system, selected.librarySHA256); ok {
++			return runtimePaths{library: system}, nil
++		}
++	}
++
+ 	cache, err := os.UserCacheDir()
+ 	if err != nil {
+ 		return runtimePaths{}, fmt.Errorf("locate user cache: %w", err)
