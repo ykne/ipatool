@@ -8,5 +8,11 @@ import (
 )
 
 func openKeyring(config keyring.Config) (keychain.Keyring, error) {
+	// Resolve the Secret Service collection by its label first; see
+	// secretServiceCollectionName.
+	if name := secretServiceCollectionName(config.ServiceName); name != "" {
+		config.LibSecretCollectionName = name
+	}
+
 	return keyring.Open(config) //nolint:wrapcheck
 }
