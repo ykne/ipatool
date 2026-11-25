@@ -55,7 +55,7 @@ func secretServiceCollectionName(label string) string {
 			continue
 		}
 
-		if got, ok := value.Value().(string); ok && got == label {
+		if got, ok := value.Value().(string); ok && strings.EqualFold(got, label) {
 			return decodeSecretServiceElement(element)
 		}
 	}
